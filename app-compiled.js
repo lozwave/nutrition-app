@@ -3,10 +3,10 @@ const {
   useEffect,
   useCallback
 } = React;
- 
+
 // ==== CONFIG: paste your Google Apps Script Web App URL here after deploying it ====
 const API_PROXY_URL = "https://script.google.com/macros/s/AKfycbwNtKjtEMqG3oEns5fhckTKlfrugQRH-ctkpiFdLvED2A2DQOdBu8Dq-AcnnqguxRZF/exec";
- 
+
 // ==== Minimal inline icon set (replaces lucide-react for standalone use) ====
 function Icon({
   children,
@@ -137,7 +137,7 @@ const Camera = p => /*#__PURE__*/React.createElement(Icon, p, /*#__PURE__*/React
   cy: "13",
   r: "4"
 }));
- 
+
 // ==== Minimal local storage-backed shim for window.storage (replaces Claude artifact storage) ====
 // ==== CONFIG: paste your Supabase project URL and anon key here ====
 const SUPABASE_URL = "https://ucrsvzekjjyjdtadhxfw.supabase.co";
@@ -157,7 +157,7 @@ async function sbFetch(path, method = "GET", body) {
   if (method === "DELETE") return null;
   return res.json();
 }
- 
+
 // window.storage: syncs to Supabase (shared across devices), with localStorage as an instant-load
 // cache and offline fallback if the network/Supabase call fails.
 window.storage = {
@@ -248,7 +248,7 @@ async function fetchWithRetry(url, options, retries = 1) {
   }
   throw lastError;
 }
- 
+
 // ---------- helpers ----------
 const todayStr = () => new Date().toISOString().slice(0, 10);
 const fmtDateHe = d => new Date(d).toLocaleDateString("he-IL", {
@@ -448,7 +448,7 @@ ${eatenText} ${prefsText}
   }
   return suggestions;
 }
- 
+
 // ---------- ring component ----------
 function Ring({
   size = 160,
@@ -536,7 +536,7 @@ function MiniRing({
     }
   }, label)));
 }
- 
+
 // ---------- weight chart (hand-rolled SVG, no chart library) ----------
 function WeightChart({
   data
@@ -596,7 +596,7 @@ function WeightChart({
     textAnchor: "middle"
   }, d.date)));
 }
- 
+
 // ---------- storage wrapper ----------
 async function loadKey(key, fallback) {
   try {
@@ -632,7 +632,7 @@ function App() {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showAddMeal, setShowAddMeal] = useState(false);
   const [showAddWeight, setShowAddWeight] = useState(false);
- 
+
   // load the last-used family member on first mount
   useEffect(() => {
     (async () => {
@@ -943,7 +943,7 @@ function App() {
     }
   }))));
 }
- 
+
 // ---------- Onboarding ----------
 function Onboarding({
   onComplete
@@ -1122,7 +1122,7 @@ function LabeledInput({
     }
   }, unit)));
 }
- 
+
 // ---------- Dashboard ----------
 function Dashboard({
   profile,
@@ -1416,7 +1416,7 @@ function SuggestMealModal({
     }
   }, "הצעות אחרות")));
 }
- 
+
 // ---------- Food Diary ----------
 async function generateDailyMenu(profile, goals, preferences) {
   const prefsText = preferences?.trim() ? `העדפות והגבלות נוספות: ${preferences.trim()}.` : "אין העדפות מיוחדות.";
@@ -2102,6 +2102,18 @@ function AddMealModal({
         color: "#6B8579"
       }
     }, "כ-", c.estimatedGrams ?? "—", " גרם · ", c.calories, " קק״ל"))), /*#__PURE__*/React.createElement("button", {
+      onClick: e => {
+        e.stopPropagation();
+        openNutritionSearch(c.name);
+      },
+      title: "בדיקת הנתונים ברשת",
+      className: "w-7 h-7 rounded-full flex items-center justify-center shrink-0",
+      style: {
+        color: "#9CB0A5"
+      }
+    }, /*#__PURE__*/React.createElement(Search, {
+      size: 13
+    })), /*#__PURE__*/React.createElement("button", {
       onClick: () => setEditingCompIdx(i),
       className: "w-7 h-7 rounded-full flex items-center justify-center shrink-0",
       style: {
@@ -2637,7 +2649,7 @@ function EditDayModal({
     }
   }, "שמירה"));
 }
- 
+
 // ---------- Weight ----------
 function WeightTab({
   weightLog,
@@ -2782,7 +2794,7 @@ function AddWeightModal({
     }
   }, "שמירה"));
 }
- 
+
 // ---------- Profile ----------
 function ProfileTab({
   profile,
@@ -2937,7 +2949,7 @@ function StatBox({
     }
   }, label));
 }
- 
+
 // ---------- shared UI ----------
 function BottomNav({
   tab,
@@ -3072,4 +3084,3 @@ function NumField({
 const rootEl = document.getElementById("root");
 const root = ReactDOM.createRoot(rootEl);
 root.render(/*#__PURE__*/React.createElement(App, null));
- 
