@@ -2007,7 +2007,13 @@ function AddMealModal({
     style: {
       background: "#EAF0EC"
     }
-  })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
+  })), /*#__PURE__*/React.createElement("button", {
+    onClick: () => setManualMode(true),
+    className: "w-full text-center py-1 text-xs font-bold",
+    style: {
+      color: "#6B8579"
+    }
+  }, "או הזנה ידנית, בלי AI"), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
     className: "text-xs font-semibold mb-1.5 block",
     style: {
       color: "#6B8579"
@@ -2039,13 +2045,7 @@ function AddMealModal({
     style: {
       color: "#B14C63"
     }
-  }, "לא הצלחתי להעריך - אפשר למלא ידנית למטה.")), /*#__PURE__*/React.createElement("button", {
-    onClick: () => setManualMode(true),
-    className: "w-full text-center py-2 text-xs font-bold",
-    style: {
-      color: "#6B8579"
-    }
-  }, "או הזנה ידנית, בלי AI")), finalStage && /*#__PURE__*/React.createElement(React.Fragment, null, !isEditing && /*#__PURE__*/React.createElement("button", {
+  }, "לא הצלחתי להעריך - אפשר למלא ידנית למטה."))), finalStage && /*#__PURE__*/React.createElement(React.Fragment, null, !isEditing && /*#__PURE__*/React.createElement("button", {
     onClick: () => {
       setWasEstimated(false);
       setManualMode(false);
@@ -2078,7 +2078,7 @@ function AddMealModal({
       }
     }, /*#__PURE__*/React.createElement("button", {
       onClick: () => toggleComponent(i),
-      className: "flex items-center gap-2.5 flex-1 text-right"
+      className: "flex items-center gap-2.5 flex-1 text-right min-w-0"
     }, /*#__PURE__*/React.createElement("div", {
       className: "w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0",
       style: {
@@ -2089,19 +2089,19 @@ function AddMealModal({
       size: 11,
       color: "#fff"
     })), /*#__PURE__*/React.createElement("div", {
-      className: "text-right"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "text-xs font-bold",
+      className: "flex items-baseline gap-2 flex-1 min-w-0"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "text-xs font-bold truncate",
       style: {
         color: "#172E27",
         textDecoration: excluded ? "line-through" : "none"
       }
-    }, c.name), /*#__PURE__*/React.createElement("div", {
-      className: "text-[10px]",
+    }, c.name), /*#__PURE__*/React.createElement("span", {
+      className: "text-xs font-bold shrink-0",
       style: {
-        color: "#6B8579"
+        color: "#2F6F52"
       }
-    }, "כ-", c.estimatedGrams ?? "—", " גרם · ", c.calories, " קק״ל"))), /*#__PURE__*/React.createElement("button", {
+    }, c.calories, " קק״ל · ", c.estimatedGrams ?? "—", " ג'"))), /*#__PURE__*/React.createElement("button", {
       onClick: e => {
         e.stopPropagation();
         openNutritionSearch(c.name);
@@ -2977,10 +2977,11 @@ function BottomNav({
     icon: User
   }];
   return /*#__PURE__*/React.createElement("div", {
-    className: "absolute bottom-0 left-0 right-0 flex justify-around items-center px-2 py-2.5",
+    className: "absolute bottom-0 left-0 right-0 flex justify-around items-center px-2 pt-2.5 pb-3",
     style: {
       background: "#FFFFFF",
-      borderTop: "1px solid #EAF0EC"
+      borderTop: "1.5px solid #DCE4DE",
+      boxShadow: "0 -6px 20px rgba(23,46,39,0.08)"
     }
   }, items.map(it => {
     const Icon = it.icon;
@@ -2988,15 +2989,18 @@ function BottomNav({
     return /*#__PURE__*/React.createElement("button", {
       key: it.id,
       onClick: () => setTab(it.id),
-      className: "flex flex-col items-center gap-1 px-2 py-1"
-    }, /*#__PURE__*/React.createElement(Icon, {
-      size: 20,
-      color: active ? "#2F6F52" : "#B7C6BD",
-      strokeWidth: active ? 2.4 : 2
-    }), /*#__PURE__*/React.createElement("span", {
-      className: "text-[10px] font-semibold",
+      className: "flex flex-col items-center gap-1 px-3 py-1.5 rounded-2xl",
       style: {
-        color: active ? "#2F6F52" : "#B7C6BD"
+        background: active ? "#EAF3EC" : "transparent"
+      }
+    }, /*#__PURE__*/React.createElement(Icon, {
+      size: 22,
+      color: active ? "#2F6F52" : "#8FA398",
+      strokeWidth: active ? 2.6 : 2
+    }), /*#__PURE__*/React.createElement("span", {
+      className: "text-[10px] font-bold",
+      style: {
+        color: active ? "#2F6F52" : "#8FA398"
       }
     }, it.label));
   }));
