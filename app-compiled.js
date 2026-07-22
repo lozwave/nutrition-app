@@ -1888,13 +1888,14 @@ function AddMealModal({
     setAddComponentError(false);
     try {
       const result = await estimateNutrition(newCompName.trim());
+      const first = Array.isArray(result.components) && result.components[0] || {};
       const newComp = {
-        name: result.name || newCompName.trim(),
-        estimatedGrams: result.estimatedGrams ?? null,
-        calories: result.calories ?? 0,
-        protein: result.protein ?? 0,
-        carbs: result.carbs ?? 0,
-        fat: result.fat ?? 0
+        name: first.name || result.name || newCompName.trim(),
+        estimatedGrams: first.estimatedGrams ?? null,
+        calories: first.calories ?? 0,
+        protein: first.protein ?? 0,
+        carbs: first.carbs ?? 0,
+        fat: first.fat ?? 0
       };
       const nextComponents = [...components, newComp];
       setComponents(nextComponents);
