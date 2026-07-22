@@ -1174,7 +1174,7 @@ function Dashboard({
       boxShadow: "0 4px 24px rgba(23,46,39,0.06)"
     }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "flex justify-center mb-5"
+    className: "flex justify-center mb-3"
   }, /*#__PURE__*/React.createElement(Ring, {
     size: 172,
     stroke: 16,
@@ -1192,7 +1192,29 @@ function Dashboard({
     style: {
       color: "#6B8579"
     }
-  }, "קלוריות נותרו")))), /*#__PURE__*/React.createElement("div", {
+  }, "קלוריות נותרו")))), goals && /*#__PURE__*/React.createElement("div", {
+    className: "text-center mb-2"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "text-xs font-bold",
+    style: {
+      color: "#172E27"
+    }
+  }, totals.calories), /*#__PURE__*/React.createElement("span", {
+    className: "text-xs",
+    style: {
+      color: "#6B8579"
+    }
+  }, " נצרכו מתוך "), /*#__PURE__*/React.createElement("span", {
+    className: "text-xs font-bold",
+    style: {
+      color: "#172E27"
+    }
+  }, goals.calorieGoal), /*#__PURE__*/React.createElement("span", {
+    className: "text-xs",
+    style: {
+      color: "#6B8579"
+    }
+  }, " קלוריות ליום")), /*#__PURE__*/React.createElement("div", {
     className: "flex justify-around"
   }, /*#__PURE__*/React.createElement(MiniRing, {
     pct: goals ? totals.protein / goals.protein : 0,
