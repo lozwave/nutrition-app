@@ -251,6 +251,11 @@ async function fetchWithRetry(url, options, retries = 1) {
 
 // ---------- helpers ----------
 const todayStr = () => new Date().toISOString().slice(0, 10);
+const shiftDate = (dateStr, deltaDays) => {
+  const d = new Date(dateStr + "T00:00:00");
+  d.setDate(d.getDate() + deltaDays);
+  return d.toISOString().slice(0, 10);
+};
 const fmtDateHe = d => new Date(d).toLocaleDateString("he-IL", {
   day: "numeric",
   month: "short"
@@ -631,6 +636,7 @@ function App() {
   const [workoutHistory, setWorkoutHistory] = useState([]); // [{date, completed, total}]
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showAddMeal, setShowAddMeal] = useState(false);
+  const [selectedFoodDate, setSelectedFoodDate] = useState(todayStr());
   const [showAddWeight, setShowAddWeight] = useState(false);
 
   // load the last-used family member on first mount
@@ -670,9 +676,8 @@ function App() {
     setProfile(p);
     await saveKey(`${activeUser}_profile`, p);
   }, [activeUser]);
-  const addMeal = useCallback(async entry => {
+  const addMeal = useCallback(async (entry, day = todayStr()) => {
     setMeals(prev => {
-      const day = todayStr();
       const list = prev[day] ? [...prev[day], entry] : [entry];
       const next = {
         ...prev,
@@ -682,9 +687,8 @@ function App() {
       return next;
     });
   }, [activeUser]);
-  const removeMeal = useCallback(async id => {
+  const removeMeal = useCallback(async (id, day = todayStr()) => {
     setMeals(prev => {
-      const day = todayStr();
       const list = (prev[day] || []).filter(m => m.id !== id);
       const next = {
         ...prev,
@@ -694,9 +698,8 @@ function App() {
       return next;
     });
   }, [activeUser]);
-  const updateMeal = useCallback(async updatedEntry => {
+  const updateMeal = useCallback(async (updatedEntry, day = todayStr()) => {
     setMeals(prev => {
-      const day = todayStr();
       const list = (prev[day] || []).map(m => m.id === updatedEntry.id ? updatedEntry : m);
       const next = {
         ...prev,
@@ -706,9 +709,8 @@ function App() {
       return next;
     });
   }, [activeUser]);
-  const addMeals = useCallback(async entries => {
+  const addMeals = useCallback(async (entries, day = todayStr()) => {
     setMeals(prev => {
-      const day = todayStr();
       const withIds = entries.map((e, i) => ({
         ...e,
         id: `${Date.now()}_${i}`
@@ -902,12 +904,14 @@ function App() {
     activeUser: activeUser,
     onQuickAdd: addMeal
   }), tab === "food" && /*#__PURE__*/React.createElement(FoodDiary, {
-    meals: meals[todayStr()] || [],
+    meals: meals[selectedFoodDate] || [],
     profile: profile,
+    selectedDate: selectedFoodDate,
+    onChangeDate: setSelectedFoodDate,
     onAdd: () => setShowAddMeal(true),
-    onRemove: removeMeal,
-    onUpdate: updateMeal,
-    onBulkAdd: addMeals
+    onRemove: id => removeMeal(id, selectedFoodDate),
+    onUpdate: m => updateMeal(m, selectedFoodDate),
+    onBulkAdd: entries => addMeals(entries, selectedFoodDate)
   }), tab === "workouts" && /*#__PURE__*/React.createElement(Workouts, {
     plan: workoutPlan,
     onToggle: toggleWorkoutDone,
@@ -932,7 +936,7 @@ function App() {
   }), showAddMeal && /*#__PURE__*/React.createElement(AddMealModal, {
     onClose: () => setShowAddMeal(false),
     onSave: m => {
-      addMeal(m);
+      addMeal(m, selectedFoodDate);
       setShowAddMeal(false);
     }
   }), showAddWeight && /*#__PURE__*/React.createElement(AddWeightModal, {
@@ -1502,15 +1506,55 @@ function FoodDiary({
   onAdd,
   onRemove,
   onUpdate,
-  onBulkAdd
+  onBulkAdd,
+  selectedDate,
+  onChangeDate
 }) {
   const goals = profile ? calcGoals(profile) : null;
   const totalCal = meals.reduce((s, m) => s + m.calories, 0);
   const [editingMeal, setEditingMeal] = useState(null);
   const [showDailyMenu, setShowDailyMenu] = useState(false);
+  const isToday = selectedDate === todayStr();
   return /*#__PURE__*/React.createElement("div", {
     className: "px-5 pt-6"
   }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center justify-between mb-3"
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => onChangeDate(shiftDate(selectedDate, -1)),
+    className: "w-8 h-8 rounded-full flex items-center justify-center",
+    style: {
+      background: "#F4F7F4",
+      color: "#6B8579"
+    }
+  }, /*#__PURE__*/React.createElement(ChevronRight, {
+    size: 16,
+    style: {
+      transform: "rotate(180deg)"
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "text-center"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "text-sm font-bold",
+    style: {
+      color: "#172E27"
+    }
+  }, isToday ? "היום" : fmtDateHe(selectedDate)), !isToday && /*#__PURE__*/React.createElement("button", {
+    onClick: () => onChangeDate(todayStr()),
+    className: "text-[10px] font-bold",
+    style: {
+      color: "#2F6F52"
+    }
+  }, "חזרה להיום")), /*#__PURE__*/React.createElement("button", {
+    onClick: () => !isToday && onChangeDate(shiftDate(selectedDate, 1)),
+    disabled: isToday,
+    className: "w-8 h-8 rounded-full flex items-center justify-center",
+    style: {
+      background: isToday ? "transparent" : "#F4F7F4",
+      color: isToday ? "#DCE4DE" : "#6B8579"
+    }
+  }, /*#__PURE__*/React.createElement(ChevronRight, {
+    size: 16
+  }))), /*#__PURE__*/React.createElement("div", {
     className: "flex items-center justify-between mb-5"
   }, /*#__PURE__*/React.createElement("h1", {
     className: "disp text-xl font-bold",
