@@ -3,10 +3,10 @@ const {
   useEffect,
   useCallback
 } = React;
-
+ 
 // ==== CONFIG: paste your Google Apps Script Web App URL here after deploying it ====
 const API_PROXY_URL = "https://script.google.com/macros/s/AKfycbwNtKjtEMqG3oEns5fhckTKlfrugQRH-ctkpiFdLvED2A2DQOdBu8Dq-AcnnqguxRZF/exec";
-
+ 
 // ==== Minimal inline icon set (replaces lucide-react for standalone use) ====
 function Icon({
   children,
@@ -137,7 +137,7 @@ const Camera = p => /*#__PURE__*/React.createElement(Icon, p, /*#__PURE__*/React
   cy: "13",
   r: "4"
 }));
-
+ 
 // ==== Minimal local storage-backed shim for window.storage (replaces Claude artifact storage) ====
 // ==== CONFIG: paste your Supabase project URL and anon key here ====
 const SUPABASE_URL = "https://ucrsvzekjjyjdtadhxfw.supabase.co";
@@ -157,7 +157,7 @@ async function sbFetch(path, method = "GET", body) {
   if (method === "DELETE") return null;
   return res.json();
 }
-
+ 
 // window.storage: syncs to Supabase (shared across devices), with localStorage as an instant-load
 // cache and offline fallback if the network/Supabase call fails.
 window.storage = {
@@ -248,7 +248,7 @@ async function fetchWithRetry(url, options, retries = 1) {
   }
   throw lastError;
 }
-
+ 
 // ---------- helpers ----------
 const todayStr = () => new Date().toISOString().slice(0, 10);
 const fmtDateHe = d => new Date(d).toLocaleDateString("he-IL", {
@@ -448,7 +448,7 @@ ${eatenText} ${prefsText}
   }
   return suggestions;
 }
-
+ 
 // ---------- ring component ----------
 function Ring({
   size = 160,
@@ -536,7 +536,7 @@ function MiniRing({
     }
   }, label)));
 }
-
+ 
 // ---------- weight chart (hand-rolled SVG, no chart library) ----------
 function WeightChart({
   data
@@ -596,7 +596,7 @@ function WeightChart({
     textAnchor: "middle"
   }, d.date)));
 }
-
+ 
 // ---------- storage wrapper ----------
 async function loadKey(key, fallback) {
   try {
@@ -632,7 +632,7 @@ function App() {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showAddMeal, setShowAddMeal] = useState(false);
   const [showAddWeight, setShowAddWeight] = useState(false);
-
+ 
   // load the last-used family member on first mount
   useEffect(() => {
     (async () => {
@@ -943,7 +943,7 @@ function App() {
     }
   }))));
 }
-
+ 
 // ---------- Onboarding ----------
 function Onboarding({
   onComplete
@@ -1122,7 +1122,7 @@ function LabeledInput({
     }
   }, unit)));
 }
-
+ 
 // ---------- Dashboard ----------
 function Dashboard({
   profile,
@@ -1416,7 +1416,7 @@ function SuggestMealModal({
     }
   }, "הצעות אחרות")));
 }
-
+ 
 // ---------- Food Diary ----------
 async function generateDailyMenu(profile, goals, preferences) {
   const prefsText = preferences?.trim() ? `העדפות והגבלות נוספות: ${preferences.trim()}.` : "אין העדפות מיוחדות.";
@@ -1699,10 +1699,13 @@ function DailyMenuModal({
   }, "הוספת הכל ליומן"))));
 }
 async function estimateNutrition(description) {
-  const prompt = `אתה מומחה תזונה. המשתמש מתאר מאכל או משקה שהוא אכל/שתה: "${description}"
-העריך את הערכים התזונתיים למנה טיפוסית ורגילה (לא ענקית ולא זעירה) של הפריט הזה, וגם את המשקל המשוער שלה בגרמים.
+  const prompt = `אתה מומחה תזונה. המשתמש מתאר ארוחה או מאכל/משקה שהוא אכל/שתה: "${description}"
+אם המשתמש ציין כמות מפורשת (למשל "300 גרם", "2 כוסות", "3 יחידות", "פרוסה אחת") - חשב לפי הכמות המדויקת הזו, לא לפי מנה טיפוסית.
+אם לא צוינה כמות בכלל - הערך לפי מנה טיפוסית ורגילה (לא ענקית ולא זעירה).
+אם התיאור כולל כמה מרכיבים שונים (למשל "פסטה עם קינואה וטבולה") - פרק לכמה מרכיבים נפרדים במערך components, ולא תמרכיב אחד כללי, אלא אם זה באמת פריט אחד בודד.
+לכל מרכיב תן שם קצר בעברית, הערכת משקל בגרמים, וערכים תזונתיים לאותה כמות. גם תן שם כללי קצר לכל הארוחה.
 החזר אך ורק אובייקט JSON תקין, בלי שום טקסט נוסף, בפורמט הזה בדיוק:
-{"name": "שם קצר ומתוקן של המאכל בעברית", "estimatedGrams": מספר_שלם_בגרם, "calories": מספר_שלם, "protein": מספר_שלם_בגרם, "carbs": מספר_שלם_בגרם, "fat": מספר_שלם_בגרם}`;
+{"name": "שם כללי קצר לארוחה", "components": [{"name": "שם המרכיב", "estimatedGrams": מספר_שלם_בגרם, "calories": מספר_שלם, "protein": מספר_שלם_בגרם, "carbs": מספר_שלם_בגרם, "fat": מספר_שלם_בגרם}, ...עוד מרכיבים אם רלוונטי]}`;
   const response = await fetchWithRetry(API_PROXY_URL, {
     method: "POST",
     headers: {
@@ -1814,6 +1817,8 @@ function AddMealModal({
   const [addingComponent, setAddingComponent] = useState(false);
   const [addComponentError, setAddComponentError] = useState(false);
   const [editingCompIdx, setEditingCompIdx] = useState(null);
+  const [manualMode, setManualMode] = useState(isEditing);
+  const finalStage = wasEstimated || manualMode;
   const handlePhotoSelect = e => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -1909,17 +1914,11 @@ function AddMealModal({
     setEstimateError(false);
     try {
       const result = await estimateNutrition(description.trim());
-      setForm({
-        name: result.name || description.trim(),
-        calories: String(result.calories ?? ""),
-        protein: String(result.protein ?? ""),
-        carbs: String(result.carbs ?? ""),
-        fat: String(result.fat ?? "")
-      });
-      setWasEstimated(true);
-      setEstimatedGrams(null);
-      setComponents([]);
+      const comps = Array.isArray(result.components) ? result.components : [];
+      setComponents(comps);
       setExcludedIdx(new Set());
+      applyComponentsSum(comps, new Set(), result.name || description.trim());
+      setWasEstimated(true);
     } catch (e) {
       setEstimateError(true);
     }
@@ -1930,7 +1929,7 @@ function AddMealModal({
     title: isEditing ? "עריכת ארוחה" : "הוספת ארוחה"
   }, /*#__PURE__*/React.createElement("div", {
     className: "space-y-3"
-  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
+  }, !finalStage && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
     className: "text-xs font-semibold mb-1.5 block",
     style: {
       color: "#6B8579"
@@ -1990,8 +1989,74 @@ function AddMealModal({
     style: {
       color: "#B14C63"
     }
-  }, "לא הצלחתי לזהות מהתמונה - אפשר לתאר במילים למטה או למלא ידנית."), wasEstimated && components.length > 0 && !photoError && /*#__PURE__*/React.createElement("div", {
-    className: "mt-2.5 space-y-1.5"
+  }, "לא הצלחתי לזהות מהתמונה - אפשר לתאר במילים למטה או למלא ידנית.")), /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-2"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex-1 h-px",
+    style: {
+      background: "#EAF0EC"
+    }
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "text-[10px] font-semibold",
+    style: {
+      color: "#9CB0A5"
+    }
+  }, "או"), /*#__PURE__*/React.createElement("div", {
+    className: "flex-1 h-px",
+    style: {
+      background: "#EAF0EC"
+    }
+  })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
+    className: "text-xs font-semibold mb-1.5 block",
+    style: {
+      color: "#6B8579"
+    }
+  }, "מה אכלת/שתית? (אפשר לציין כמות, למשל \"300 גרם\" או \"2 כוסות\")"), /*#__PURE__*/React.createElement("div", {
+    className: "flex gap-2"
+  }, /*#__PURE__*/React.createElement("input", {
+    value: description,
+    onChange: e => setDescription(e.target.value),
+    placeholder: "לדוגמה: קפה ברד גדול",
+    onKeyDown: e => e.key === "Enter" && runEstimate(),
+    className: "flex-1 py-3.5 px-4 rounded-2xl border-2 outline-none text-sm font-medium bg-white",
+    style: {
+      borderColor: "#DCE4DE",
+      color: "#172E27"
+    }
+  }), /*#__PURE__*/React.createElement("button", {
+    onClick: runEstimate,
+    disabled: !description.trim() || estimating,
+    className: "px-4 rounded-2xl disp font-bold text-white text-xs shrink-0 flex items-center gap-1.5",
+    style: {
+      background: description.trim() && !estimating ? "#2F6F52" : "#B7C6BD"
+    }
+  }, estimating ? /*#__PURE__*/React.createElement(Loader2, {
+    size: 14,
+    className: "animate-spin"
+  }) : "חישוב אוטומטי")), estimateError && /*#__PURE__*/React.createElement("p", {
+    className: "text-[11px] mt-1.5",
+    style: {
+      color: "#B14C63"
+    }
+  }, "לא הצלחתי להעריך - אפשר למלא ידנית למטה.")), /*#__PURE__*/React.createElement("button", {
+    onClick: () => setManualMode(true),
+    className: "w-full text-center py-2 text-xs font-bold",
+    style: {
+      color: "#6B8579"
+    }
+  }, "או הזנה ידנית, בלי AI")), finalStage && /*#__PURE__*/React.createElement(React.Fragment, null, !isEditing && /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      setWasEstimated(false);
+      setManualMode(false);
+      setComponents([]);
+      setExcludedIdx(new Set());
+    },
+    className: "text-xs font-bold mb-1",
+    style: {
+      color: "#2F6F52"
+    }
+  }, "← חזרה לצילום/תיאור מחדש"), components.length > 0 && /*#__PURE__*/React.createElement("div", {
+    className: "space-y-1.5"
   }, components.map((c, i) => {
     const excluded = excludedIdx.has(i);
     if (editingCompIdx === i) {
@@ -2101,63 +2166,14 @@ function AddMealModal({
     style: {
       color: "#2F6F52"
     }
-  }, "סה״כ: ", form.name, " · כ-", estimatedGrams, " גרם · ", form.calories, " קק״ל")))), /*#__PURE__*/React.createElement("div", {
-    className: "flex items-center gap-2"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "flex-1 h-px",
-    style: {
-      background: "#EAF0EC"
-    }
-  }), /*#__PURE__*/React.createElement("span", {
-    className: "text-[10px] font-semibold",
-    style: {
-      color: "#9CB0A5"
-    }
-  }, "או"), /*#__PURE__*/React.createElement("div", {
-    className: "flex-1 h-px",
-    style: {
-      background: "#EAF0EC"
-    }
-  })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("label", {
-    className: "text-xs font-semibold mb-1.5 block",
-    style: {
-      color: "#6B8579"
-    }
-  }, "מה אכלת/שתית?"), /*#__PURE__*/React.createElement("div", {
-    className: "flex gap-2"
-  }, /*#__PURE__*/React.createElement("input", {
-    value: description,
-    onChange: e => setDescription(e.target.value),
-    placeholder: "לדוגמה: קפה ברד גדול",
-    onKeyDown: e => e.key === "Enter" && runEstimate(),
-    className: "flex-1 py-3.5 px-4 rounded-2xl border-2 outline-none text-sm font-medium bg-white",
-    style: {
-      borderColor: "#DCE4DE",
-      color: "#172E27"
-    }
-  }), /*#__PURE__*/React.createElement("button", {
-    onClick: runEstimate,
-    disabled: !description.trim() || estimating,
-    className: "px-4 rounded-2xl disp font-bold text-white text-xs shrink-0 flex items-center gap-1.5",
-    style: {
-      background: description.trim() && !estimating ? "#2F6F52" : "#B7C6BD"
-    }
-  }, estimating ? /*#__PURE__*/React.createElement(Loader2, {
-    size: 14,
-    className: "animate-spin"
-  }) : "חישוב אוטומטי")), estimateError && /*#__PURE__*/React.createElement("p", {
-    className: "text-[11px] mt-1.5",
-    style: {
-      color: "#B14C63"
-    }
-  }, "לא הצלחתי להעריך - אפשר למלא ידנית למטה."), wasEstimated && !estimateError && /*#__PURE__*/React.createElement("div", {
-    className: "flex items-center justify-between mt-1.5"
+  }, "סה״כ: ", form.name, " · כ-", estimatedGrams, " גרם · ", form.calories, " קק״ל"))), wasEstimated && /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center justify-between"
   }, /*#__PURE__*/React.createElement("p", {
     className: "text-[11px]",
     style: {
       color: "#6B8579"
     }
-  }, "הערכה בלבד למנה טיפוסית - מוזמנת לתקן למטה."), /*#__PURE__*/React.createElement("button", {
+  }, "הערכת AI - מוזמנת לתקן למטה."), /*#__PURE__*/React.createElement("button", {
     onClick: () => openNutritionSearch(form.name || description),
     title: "בדיקת הנתונים ברשת",
     className: "flex items-center gap-1 shrink-0 px-2.5 py-1 rounded-full",
@@ -2169,12 +2185,7 @@ function AddMealModal({
     size: 12
   }), /*#__PURE__*/React.createElement("span", {
     className: "text-[10px] font-bold"
-  }, "בדיקה ברשת")))), /*#__PURE__*/React.createElement("div", {
-    className: "h-px my-1",
-    style: {
-      background: "#EAF0EC"
-    }
-  }), /*#__PURE__*/React.createElement("div", {
+  }, "בדיקה ברשת"))), /*#__PURE__*/React.createElement("div", {
     className: "flex items-center justify-between mb-1.5"
   }, /*#__PURE__*/React.createElement("label", {
     className: "text-xs font-semibold",
@@ -2228,7 +2239,7 @@ function AddMealModal({
       ...form,
       fat: v
     })
-  }))), /*#__PURE__*/React.createElement("button", {
+  })))), /*#__PURE__*/React.createElement("button", {
     disabled: !valid,
     onClick: () => onSave({
       id: isEditing ? initialMeal.id : Date.now().toString(),
@@ -2625,7 +2636,7 @@ function EditDayModal({
     }
   }, "שמירה"));
 }
-
+ 
 // ---------- Weight ----------
 function WeightTab({
   weightLog,
@@ -2770,7 +2781,7 @@ function AddWeightModal({
     }
   }, "שמירה"));
 }
-
+ 
 // ---------- Profile ----------
 function ProfileTab({
   profile,
@@ -2925,7 +2936,7 @@ function StatBox({
     }
   }, label));
 }
-
+ 
 // ---------- shared UI ----------
 function BottomNav({
   tab,
@@ -3060,3 +3071,4 @@ function NumField({
 const rootEl = document.getElementById("root");
 const root = ReactDOM.createRoot(rootEl);
 root.render(/*#__PURE__*/React.createElement(App, null));
+ 
