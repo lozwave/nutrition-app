@@ -1203,28 +1203,38 @@ function Dashboard({
       color: "#6B8579"
     }
   }, "קלוריות נותרו")))), goals && /*#__PURE__*/React.createElement("div", {
-    className: "text-center mb-2"
+    className: "text-center mb-3"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "inline-block py-1.5 px-3 rounded-full",
+    style: {
+      background: "#F4F7F4"
+    }
   }, /*#__PURE__*/React.createElement("span", {
+    className: "text-[10px]",
+    style: {
+      color: "#9CB0A5"
+    }
+  }, "צרכת "), /*#__PURE__*/React.createElement("span", {
     className: "text-xs font-bold",
     style: {
       color: "#172E27"
     }
   }, totals.calories), /*#__PURE__*/React.createElement("span", {
-    className: "text-xs",
+    className: "text-xs mx-1.5",
     style: {
-      color: "#6B8579"
+      color: "#DCE4DE"
     }
-  }, " נצרכו מתוך "), /*#__PURE__*/React.createElement("span", {
+  }, "·"), /*#__PURE__*/React.createElement("span", {
+    className: "text-[10px]",
+    style: {
+      color: "#9CB0A5"
+    }
+  }, "יעד "), /*#__PURE__*/React.createElement("span", {
     className: "text-xs font-bold",
     style: {
-      color: "#172E27"
-    }
-  }, goals.calorieGoal), /*#__PURE__*/React.createElement("span", {
-    className: "text-xs",
-    style: {
       color: "#6B8579"
     }
-  }, " קלוריות ליום")), /*#__PURE__*/React.createElement("div", {
+  }, goals.calorieGoal))), /*#__PURE__*/React.createElement("div", {
     className: "flex justify-around"
   }, /*#__PURE__*/React.createElement(MiniRing, {
     pct: goals ? totals.protein / goals.protein : 0,
@@ -2990,23 +3000,28 @@ function BottomNav({
   const items = [{
     id: "dashboard",
     label: "בית",
-    icon: Home
+    icon: Home,
+    color: "#1F9D5C"
   }, {
     id: "food",
     label: "תזונה",
-    icon: Utensils
+    icon: Utensils,
+    color: "#B14C63"
   }, {
     id: "workouts",
     label: "אימונים",
-    icon: Dumbbell
+    icon: Dumbbell,
+    color: "#D9A441"
   }, {
     id: "weight",
     label: "משקל",
-    icon: ScaleIcon
+    icon: ScaleIcon,
+    color: "#4C7EA6"
   }, {
     id: "profile",
     label: "פרופיל",
-    icon: User
+    icon: User,
+    color: "#7B6FA6"
   }];
   return /*#__PURE__*/React.createElement("div", {
     className: "absolute bottom-0 left-0 right-0 flex justify-around items-center px-2 pt-2.5 pb-3",
@@ -3021,18 +3036,17 @@ function BottomNav({
     return /*#__PURE__*/React.createElement("button", {
       key: it.id,
       onClick: () => setTab(it.id),
-      className: "flex flex-col items-center gap-1 px-3 py-1.5 rounded-2xl",
-      style: {
-        background: active ? "#EAF3EC" : "transparent"
-      }
+      className: "flex flex-col items-center gap-1 px-3.5 py-2"
     }, /*#__PURE__*/React.createElement(Icon, {
-      size: 22,
-      color: active ? "#2F6F52" : "#8FA398",
-      strokeWidth: active ? 2.6 : 2
+      size: active ? 25 : 22,
+      color: it.color,
+      strokeWidth: active ? 2.6 : 2.1
     }), /*#__PURE__*/React.createElement("span", {
       className: "text-[10px] font-bold",
       style: {
-        color: active ? "#2F6F52" : "#8FA398"
+        color: it.color,
+        textDecoration: active ? "underline" : "none",
+        textUnderlineOffset: "3px"
       }
     }, it.label));
   }));
