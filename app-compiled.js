@@ -887,7 +887,8 @@ function App() {
     onComplete: p => {
       saveProfile(p);
       setShowOnboarding(false);
-    }
+    },
+    onBack: switchUserPicker
   }), !showOnboarding && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "h-full overflow-y-auto pb-24",
     style: {
@@ -946,7 +947,8 @@ function App() {
 
 // ---------- Onboarding ----------
 function Onboarding({
-  onComplete
+  onComplete,
+  onBack
 }) {
   const [step, setStep] = useState(0);
   const [form, setForm] = useState({
@@ -976,7 +978,15 @@ function Onboarding({
     style: {
       background: "#F4F7F4"
     }
-  }, /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: onBack,
+    className: "text-xs font-bold mb-3 flex items-center gap-1 self-start",
+    style: {
+      color: "#6B8579"
+    }
+  }, /*#__PURE__*/React.createElement(ChevronRight, {
+    size: 14
+  }), " חזרה לבחירת משתמש"), /*#__PURE__*/React.createElement("div", {
     className: "flex gap-1.5 mb-8 mt-2"
   }, [0, 1, 2].map(i => /*#__PURE__*/React.createElement("div", {
     key: i,
