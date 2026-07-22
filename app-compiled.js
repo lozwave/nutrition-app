@@ -3024,7 +3024,7 @@ function BottomNav({
     color: "#7B6FA6"
   }];
   return /*#__PURE__*/React.createElement("div", {
-    className: "absolute bottom-0 left-0 right-0 flex justify-around items-center px-2 pt-2.5 pb-3",
+    className: "absolute bottom-0 left-0 right-0 flex justify-around items-center px-2 pt-3.5 pb-4",
     style: {
       background: "#FFFFFF",
       borderTop: "1.5px solid #DCE4DE",
@@ -3036,13 +3036,13 @@ function BottomNav({
     return /*#__PURE__*/React.createElement("button", {
       key: it.id,
       onClick: () => setTab(it.id),
-      className: "flex flex-col items-center gap-1 px-3.5 py-2"
+      className: "flex flex-col items-center gap-1.5 px-3.5 py-1.5"
     }, /*#__PURE__*/React.createElement(Icon, {
-      size: active ? 25 : 22,
+      size: active ? 30 : 27,
       color: it.color,
-      strokeWidth: active ? 2.6 : 2.1
+      strokeWidth: active ? 2.5 : 2
     }), /*#__PURE__*/React.createElement("span", {
-      className: "text-[10px] font-bold",
+      className: "text-xs font-bold",
       style: {
         color: it.color,
         textDecoration: active ? "underline" : "none",
