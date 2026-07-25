@@ -743,6 +743,23 @@ function App() {
       saveProfile(updated);
     }
   }, [profile, saveProfile, activeUser]);
+  const updateWeightEntry = useCallback((date, newWeightKg) => {
+    setWeightLog(prev => {
+      const next = prev.map(e => e.date === date ? {
+        ...e,
+        weightKg: newWeightKg
+      } : e).sort((a, b) => a.date.localeCompare(b.date));
+      saveKey(`${activeUser}_weightLog`, next);
+      return next;
+    });
+  }, [activeUser]);
+  const deleteWeightEntry = useCallback(date => {
+    setWeightLog(prev => {
+      const next = prev.filter(e => e.date !== date);
+      saveKey(`${activeUser}_weightLog`, next);
+      return next;
+    });
+  }, [activeUser]);
   const addDemoWeightData = useCallback(() => {
     const base = profile?.weightKg || 75;
     const days = [10, 7, 4, 2];
@@ -924,7 +941,9 @@ function App() {
     weightLog: weightLog,
     profile: profile,
     onAdd: () => setShowAddWeight(true),
-    onLoadDemo: addDemoWeightData
+    onLoadDemo: addDemoWeightData,
+    onUpdateEntry: updateWeightEntry,
+    onDeleteEntry: deleteWeightEntry
   }), tab === "profile" && /*#__PURE__*/React.createElement(ProfileTab, {
     profile: profile,
     onSave: saveProfile,
@@ -1527,10 +1546,7 @@ function FoodDiary({
       color: "#6B8579"
     }
   }, /*#__PURE__*/React.createElement(ChevronRight, {
-    size: 16,
-    style: {
-      transform: "rotate(180deg)"
-    }
+    size: 16
   })), /*#__PURE__*/React.createElement("div", {
     className: "text-center"
   }, /*#__PURE__*/React.createElement("div", {
@@ -1553,7 +1569,10 @@ function FoodDiary({
       color: isToday ? "#DCE4DE" : "#6B8579"
     }
   }, /*#__PURE__*/React.createElement(ChevronRight, {
-    size: 16
+    size: 16,
+    style: {
+      transform: "rotate(180deg)"
+    }
   }))), /*#__PURE__*/React.createElement("div", {
     className: "flex items-center justify-between mb-5"
   }, /*#__PURE__*/React.createElement("h1", {
@@ -2741,8 +2760,11 @@ function WeightTab({
   weightLog,
   profile,
   onAdd,
-  onLoadDemo
+  onLoadDemo,
+  onUpdateEntry,
+  onDeleteEntry
 }) {
+  const [editingDate, setEditingDate] = useState(null);
   const bmi = profile ? calcBMI(weightLog[weightLog.length - 1]?.weightKg ?? profile.weightKg, profile.heightCm) : null;
   const bmiInfo = bmi ? bmiLabel(bmi) : null;
   const chartData = weightLog.map(e => ({
@@ -2851,12 +2873,59 @@ function WeightTab({
     style: {
       color: "#6B8579"
     }
-  }, fmtDateHe(e.date)), /*#__PURE__*/React.createElement("span", {
+  }, fmtDateHe(e.date)), /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-2.5"
+  }, /*#__PURE__*/React.createElement("span", {
     className: "font-bold text-sm",
     style: {
       color: "#172E27"
     }
-  }, e.weightKg, " ק״ג")))));
+  }, e.weightKg, " ק״ג"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => setEditingDate(e.date),
+    className: "w-7 h-7 rounded-full flex items-center justify-center",
+    style: {
+      color: "#9CB0A5"
+    }
+  }, /*#__PURE__*/React.createElement(Pencil, {
+    size: 13
+  })), /*#__PURE__*/React.createElement("button", {
+    onClick: () => onDeleteEntry(e.date),
+    className: "w-7 h-7 rounded-full flex items-center justify-center",
+    style: {
+      color: "#B14C63"
+    }
+  }, /*#__PURE__*/React.createElement(Trash2, {
+    size: 13
+  })))))), editingDate && /*#__PURE__*/React.createElement(EditWeightModal, {
+    entry: weightLog.find(e => e.date === editingDate),
+    onClose: () => setEditingDate(null),
+    onSave: newWeight => {
+      onUpdateEntry(editingDate, newWeight);
+      setEditingDate(null);
+    }
+  }));
+}
+function EditWeightModal({
+  entry,
+  onClose,
+  onSave
+}) {
+  const [val, setVal] = useState(entry?.weightKg ?? "");
+  return /*#__PURE__*/React.createElement(Modal, {
+    onClose: onClose,
+    title: `עריכת מדידה - ${fmtDateHe(entry?.date)}`
+  }, /*#__PURE__*/React.createElement(NumField, {
+    label: "משקל (ק״ג)",
+    value: val,
+    onChange: setVal
+  }), /*#__PURE__*/React.createElement("button", {
+    disabled: !val,
+    onClick: () => onSave(Number(val)),
+    className: "w-full py-3.5 rounded-2xl disp font-bold text-white mt-5",
+    style: {
+      background: val ? "#2F6F52" : "#B7C6BD"
+    }
+  }, "עדכון"));
 }
 function AddWeightModal({
   current,
