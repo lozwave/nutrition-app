@@ -639,10 +639,10 @@ function App() {
   const [selectedFoodDate, setSelectedFoodDate] = useState(todayStr());
   const [showAddWeight, setShowAddWeight] = useState(false);
 
-  // load the last-used family member on first mount
+  // load the last-used family member on first mount (device-local, not synced across devices)
   useEffect(() => {
     (async () => {
-      const lastUser = await loadKey("active_user", null);
+      const lastUser = localStorage.getItem("active_user_local");
       if (lastUser) {
         await switchToUser(lastUser);
       } else {
@@ -664,13 +664,13 @@ function App() {
     setWorkoutPlan(wp);
     setWorkoutHistory(wh);
     setTab("dashboard");
-    saveKey("active_user", userId);
+    localStorage.setItem("active_user_local", userId);
     if (!p) setShowOnboarding(true);else setShowOnboarding(false);
     setLoading(false);
   }, []);
   const switchUserPicker = useCallback(() => {
     setActiveUser(null);
-    saveKey("active_user", null);
+    localStorage.removeItem("active_user_local");
   }, []);
   const saveProfile = useCallback(async p => {
     setProfile(p);
